@@ -4,9 +4,9 @@
       <h5 class="fw-bold mb-3">Explore Creators</h5>
     </div>
 
-    <div class="row">
-      <Loader v-if="loading" />
-      <div v-else>
+    <Loader v-if="loading" />
+    <div v-else>
+      <div class="row">
         <Empty msg="No creators were found in this category" v-if="creators.length < 1" />
         <div v-else v-for="creator in creators" :key="creator.address" class="col-md-4 col-lg-3">
           <div class="card mb-3">
