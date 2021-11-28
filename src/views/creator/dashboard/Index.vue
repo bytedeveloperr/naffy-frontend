@@ -165,7 +165,7 @@
             </div>
 
             <div class="d-grid">
-              <button type="submit" :disabled="input.withdraw.loading" class="btn btn-info" @click="withdrawToken">Support</button>
+              <button type="submit" :disabled="input.withdraw.loading" class="btn btn-info" @click="withdrawToken">Withdraw</button>
             </div>
           </div>
         </div>
@@ -296,6 +296,7 @@ export default {
         const amount = this.input.withdraw.amount
 
         await creator.withdrawToken(this.address, amount, token)
+        window.location.reload()
       } catch (err) {
         this.$toastr.e(err.message)
       }

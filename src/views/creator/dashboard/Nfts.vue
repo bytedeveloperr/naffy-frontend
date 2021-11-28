@@ -3,7 +3,6 @@
     <div class="row">
       <div class="d-flex justify-content-between">
         <h5 class="fw-bold">NFT Dashboard</h5>
-        <button href="#" disabled class="btn btn-info">Mint</button>
       </div>
 
       <div class="">
