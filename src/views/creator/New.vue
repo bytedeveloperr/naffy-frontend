@@ -66,15 +66,20 @@ export default {
 
   methods: {
     async newCreator() {
-      this.loading = true
+      try {
+        this.loading = true
 
-      const fileName = this.file.name
-      const cid = await storage.upload(web3Storage, [this.file])
-      this.input.image = `${cid}/${fileName}`
+        const fileName = this.file.name
+        const cid = await storage.upload(web3Storage, [this.file])
+        this.input.image = `${cid}/${fileName}`
 
-      await creator.newCreator(this.input)
+        await creator.newCreator(this.input)
 
-      this.loading = false
+        this.loading = false
+      } catch (err) {
+        this.loading = false
+        this.$toastr.e(err.message)
+      }
     },
 
     handleFileChange(e) {

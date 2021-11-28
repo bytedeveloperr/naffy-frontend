@@ -177,28 +177,46 @@ export default {
 
   methods: {
     async listNFT() {
-      this.input.sell.loading = true
-      await creator.listNFT(this.nftCreatorAddress, this.tokenId, this.contractAddress, this.input.sell.price)
-      this.input.sell.loading = false
-      window.location.reload()
+      try {
+        this.input.sell.loading = true
+        await creator.listNFT(this.nftCreatorAddress, this.tokenId, this.contractAddress, this.input.sell.price)
+        this.input.sell.loading = false
+        window.location.reload()
+      } catch (err) {
+        this.input.sell.loading = false
+        this.$toastr.e(err.message)
+      }
     },
 
     async unListNFT() {
-      await creator.unListNFT(this.nftCreatorAddress, this.tokenId, this.contractAddress)
-      window.location.reload()
+      try {
+        await creator.unListNFT(this.nftCreatorAddress, this.tokenId, this.contractAddress)
+        window.location.reload()
+      } catch (err) {
+        this.$toastr.e(err.message)
+      }
     },
 
     async buyNFT() {
-      await creator.buyNFT(this.nftCreatorAddress, this.tokenId, this.contractAddress, this.nft.price)
-      window.location.reload()
+      try {
+        await creator.buyNFT(this.nftCreatorAddress, this.tokenId, this.contractAddress, this.nft.price)
+        window.location.reload()
+      } catch (err) {
+        this.$toastr.e(err.message)
+      }
     },
 
     async transferNFTItem() {
-      this.input.transfer.loading = true
-      await creator.transferNFTItem(this.nftCreatorAddress, this.tokenId, this.contractAddress, this.input.transfer.to)
-      this.input.transfer.loading = false
+      try {
+        this.input.transfer.loading = true
+        await creator.transferNFTItem(this.nftCreatorAddress, this.tokenId, this.contractAddress, this.input.transfer.to)
+        this.input.transfer.loading = false
 
-      window.location.reload()
+        window.location.reload()
+      } catch (err) {
+        this.input.transfer.loading = false
+        this.$toastr.e(err.message)
+      }
     },
   },
 }

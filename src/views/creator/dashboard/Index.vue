@@ -289,12 +289,16 @@ export default {
 
   methods: {
     async withdrawToken() {
-      this.input.withdraw.loading = true
+      try {
+        this.input.withdraw.loading = true
 
-      const token = this.input.withdraw.token
-      const amount = this.input.withdraw.amount
+        const token = this.input.withdraw.token
+        const amount = this.input.withdraw.amount
 
-      await creator.withdrawToken(this.address, amount, token)
+        await creator.withdrawToken(this.address, amount, token)
+      } catch (err) {
+        this.$toastr.e(err.message)
+      }
     },
   },
 }

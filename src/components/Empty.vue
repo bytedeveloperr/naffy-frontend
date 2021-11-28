@@ -1,8 +1,5 @@
 <template>
-  <div>
-    <!-- <img src="/assets/images/icons/empty.svg" alt="Empty Box" /> -->
-    <p class="text-light text-center">{{ msg }}</p>
-  </div>
+  <p class="text-light text-center">{{ msg }}</p>
 </template>
 
 <script>

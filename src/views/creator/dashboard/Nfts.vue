@@ -84,7 +84,5 @@ export default {
 
     this.loading = false
   },
-
-  methods: {},
 }
 </script>

@@ -95,18 +95,23 @@ export default {
     },
 
     async updateProfile() {
-      this.profile.loading = true
+      try {
+        this.profile.loading = true
 
-      if (this.file.name) {
-        const fileName = this.file.name
-        const cid = await storage.upload(web3Storage, [this.file])
-        this.profile.data.image = `${cid}/${fileName}`
+        if (this.file.name) {
+          const fileName = this.file.name
+          const cid = await storage.upload(web3Storage, [this.file])
+          this.profile.data.image = `${cid}/${fileName}`
+        }
+
+        await api.updateCreatorProfile(this.profile.data._id, this.profile.data)
+
+        this.profile.loading = false
+        window.location.reload()
+      } catch (err) {
+        this.profile.loading = false
+        this.$toastr.e(err.message)
       }
-
-      await api.updateCreatorProfile(this.profile.data._id, this.profile.data)
-
-      this.profile.loading = false
-      window.location.reload()
     },
   },
 }

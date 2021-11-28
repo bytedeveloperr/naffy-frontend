@@ -6,6 +6,9 @@
         <img :src="'https://ipfs.infura.io/ipfs/' + creator.profile.image" :alt="creator.profile.name" class="img-thumbnail img-profile" />
         <div class="d-flex justify-content-start mt-3">
           <h5 class="fs-5 me-3">{{ creator.profile.name }}</h5>
+          <button v-clipboard:copy="creatorLink" v-clipboard:success="onCopy" v-clipboard:error="onError" class="btn">
+            <span class=" text-light mdi mdi-content-copy"></span>
+          </button>
         </div>
         <div class="mb-3">{{ creator.profile.description }}</div>
         <div class="d-flex justify-content-start">
@@ -43,26 +46,29 @@
           </div>
           <div class="card-body">
             <Loader v-if="creator.activities.loading" />
-            <table v-else class="table table-dark">
-              <thead>
-                <tr>
-                  <th scope="col">Actor</th>
-                  <th scope="col">Action</th>
-                  <th scope="col">Amount</th>
-                  <th scope="col">Token</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="activity in creator.activities.data" :key="activity.id">
-                  <td>
-                    <a :href="explorerUrl + '/address/' + activity.actor" target="_blank" class="color-link text-decoration-none">{{ utils.shortenAddress(activity.actor) }}</a>
-                  </td>
-                  <td>{{ common.activities[activity.action] }}</td>
-                  <td>{{ utils.fromWei(activity.value) }}</td>
-                  <td>{{ common.allTokens[activity.token] }}</td>
-                </tr>
-              </tbody>
-            </table>
+            <div v-else>
+              <Empty v-if="creator.activities.data.length < 1" msg="No activities yet" />
+              <table v-else class="table table-dark">
+                <thead>
+                  <tr>
+                    <th scope="col">Actor</th>
+                    <th scope="col">Action</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Token</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="activity in creator.activities.data" :key="activity.id">
+                    <td>
+                      <a :href="explorerUrl + '/address/' + activity.actor" target="_blank" class="color-link text-decoration-none">{{ utils.shortenAddress(activity.actor) }}</a>
+                    </td>
+                    <td>{{ common.activities[activity.action] }}</td>
+                    <td>{{ utils.fromWei(activity.value) }}</td>
+                    <td>{{ common.allTokens[activity.token] }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -75,8 +81,7 @@
           <Loader v-if="creator.nfts.loading" />
           <div v-else>
             <Empty v-if="creator.nfts.count == 0" msg="No NFTs yet" />
-
-            <div v-for="nft in creator.nfts.data" :key="nft.tokenId" class="col-md-4">
+            <div v-else v-for="nft in creator.nfts.data" :key="nft.tokenId" class="col-md-4">
               <div class="card">
                 <div class="card-body">
                   <img :src="nft.metadata.image" width="100%" :alt="nft.metadata.name" class="img-thumbnail" />
@@ -158,6 +163,7 @@
 
 <script>
 import Loader from "@/components/Loader.vue"
+import Empty from "@/components/Empty.vue"
 import { api } from "@/helpers/api"
 import { creator } from "@/helpers/creator"
 import { utils } from "@/helpers/utils"
@@ -168,6 +174,7 @@ import axios from "axios"
 export default {
   components: {
     Loader,
+    Empty,
   },
 
   data() {
@@ -177,6 +184,7 @@ export default {
       explorerUrl: process.env.VUE_APP_EXPLORER_URL,
       loading: false,
       address: this.$route.params.address,
+      creatorLink: "",
       input: {
         token: {
           token: "",
@@ -213,6 +221,8 @@ export default {
     this.creator.profile.loading = true
     this.creator.balances.loading = true
     this.creator.activities.loading = true
+
+    this.creatorLink = `${process.env.VUE_APP_CLIENT_URL}/#/creator/${this.address}`
 
     const apiData = await api.getCreator({ address: this.address })
     this.creator.profile = { ...apiData.data, loading: false }
@@ -261,11 +271,12 @@ export default {
           this.input.token.loading = false
           window.location.reload()
         } else {
-          alert("Please select a token")
+          this.$toastr.e("Please select a token")
           this.input.token.loading = false
         }
-      } catch (e) {
+      } catch (err) {
         this.input.token.loading = false
+        this.$toastr.e(err.message)
       }
     },
 
@@ -279,9 +290,18 @@ export default {
         await creator.supportWithNFT(this.address, tokenId, nftAddress)
         this.input.nft.loading = false
         window.location.reload()
-      } catch (e) {
+      } catch (err) {
         this.input.nft.loading = false
+        this.$toastr.e(err.message)
       }
+    },
+
+    onCopy() {
+      this.$toastr.s("Creator's link has been copied")
+    },
+
+    onError() {
+      this.$toastr.e("Failed to copy creator's link")
     },
   },
 }

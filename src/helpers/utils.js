@@ -19,4 +19,8 @@ export const utils = {
     }
     return url
   },
+
+  // handleMetamaskError(err, toastr) {
+  //   toastr.e(e.message)
+  // },
 }
